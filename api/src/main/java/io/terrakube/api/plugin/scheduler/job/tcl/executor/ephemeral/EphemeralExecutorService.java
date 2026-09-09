@@ -331,8 +331,16 @@ public class EphemeralExecutorService {
                 .withRestartPolicy("Never")
                 .endSpec()
                 .endTemplate()
-                .withTtlSecondsAfterFinished(30)
+                .withTtlSecondsAfterFinished(ephemeralConfiguration.getTtlSecondsAfterFinished())
                 .endSpec();
+
+        if (ephemeralConfiguration.getActiveDeadlineSeconds() != null) {
+            jobBuilder.editSpec().withActiveDeadlineSeconds(ephemeralConfiguration.getActiveDeadlineSeconds()).endSpec();
+        }
+
+        if (ephemeralConfiguration.getBackoffLimit() != null) {
+            jobBuilder.editSpec().withBackoffLimit(ephemeralConfiguration.getBackoffLimit()).endSpec();
+        }
 
         if (!podAnnotations.isEmpty()) {
             jobBuilder.editSpec().editTemplate().editOrNewMetadata()

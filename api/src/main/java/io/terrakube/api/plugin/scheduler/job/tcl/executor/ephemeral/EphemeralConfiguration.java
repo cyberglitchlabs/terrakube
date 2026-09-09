@@ -24,4 +24,7 @@ public class EphemeralConfiguration {
     private String image;
     private List<String> secret;
     private Map<String, String> nodeSelector;
+    private Long activeDeadlineSeconds;
+    private Integer backoffLimit;
+    private Integer ttlSecondsAfterFinished = 30;
 }

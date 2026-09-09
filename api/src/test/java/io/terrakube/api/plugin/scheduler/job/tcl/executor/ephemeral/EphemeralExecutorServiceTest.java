@@ -295,6 +295,30 @@ public class EphemeralExecutorServiceTest {
     }
 
     @Test
+    public void defaultsActiveDeadlineSecondsAndBackoffLimitToNull() throws ExecutionException {
+        subject().send(job(), context());
+
+        verify(namespaced, times(1)).resource(job.capture());
+        assertNull(job.getValue().getSpec().getActiveDeadlineSeconds());
+        assertNull(job.getValue().getSpec().getBackoffLimit());
+        assertEquals(30, job.getValue().getSpec().getTtlSecondsAfterFinished());
+    }
+
+    @Test
+    public void appliesActiveDeadlineSecondsBackoffLimitAndTtlWhenConfigured() throws ExecutionException {
+        config.setActiveDeadlineSeconds(3600L);
+        config.setBackoffLimit(2);
+        config.setTtlSecondsAfterFinished(60);
+
+        subject().send(job(), context());
+
+        verify(namespaced, times(1)).resource(job.capture());
+        assertEquals(3600L, job.getValue().getSpec().getActiveDeadlineSeconds());
+        assertEquals(2, job.getValue().getSpec().getBackoffLimit());
+        assertEquals(60, job.getValue().getSpec().getTtlSecondsAfterFinished());
+    }
+
+    @Test
     public void setResources() throws ExecutionException {
         ExecutorContext context = context();
         context.getEnvironmentVariables().put("EPHEMERAL_CPU_REQUEST", "100m");
